@@ -27,10 +27,8 @@ function getStatusClass($status) {
     switch ($status) {
         case 'Available':
             return 'status-available';
-
         case 'In Development':
             return 'status-development';
-
         default:
             return 'status-coming-soon';
     }
@@ -38,15 +36,11 @@ function getStatusClass($status) {
 
 // Resolve a background image for each expanding panel.
 function getSubsystemImage(array $subsystem, $index, array $fallbacks) {
-
-    // Use a custom image supplied by the API when present.
     $custom = trim((string) ($subsystem['image'] ?? ''));
-
     if ($custom !== '') {
         return $custom;
     }
 
-    // Otherwise try to match a themed image by category/name.
     $haystack = strtolower(
         (string) ($subsystem['category'] ?? '') . ' ' .
         (string) ($subsystem['name'] ?? '')
@@ -72,7 +66,6 @@ function getSubsystemImage(array $subsystem, $index, array $fallbacks) {
         }
     }
 
-    // Fall back to a rotating medical image.
     if (!empty($fallbacks)) {
         return $fallbacks[$index % count($fallbacks)];
     }
@@ -89,83 +82,61 @@ $fallbackImages = [
 
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>MediLink | Hospital Management Portal</title>
-
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 
 <body>
 
 <div class="app-container">
-
     <main class="main-content" id="dashboard">
-
 
         <!-- Welcome Section -->
         <section class="welcome-section">
-
-            <div>
-
-                <h2>WELCOME TO HOSPITAL MANAGEMENT SYSTEM</h2>
-
+            <div class="welcome-content">
+                <span class="welcome-eyebrow">MediLink Portal</span>
+                <h2>Welcome to the Hospital Management System</h2>
                 <p>
                     Access and navigate the different hospital management
-                    subsystems through one centralized portal.
+                    subsystems through one centralized, secure portal.
                 </p>
             </div>
-
             <div class="welcome-decoration">
                 <span>+</span>
                 <span>⛨</span>
                 <span>+</span>
             </div>
-
         </section>
 
         <!-- Hospital Subsystems -->
         <section class="subsystems-section elastic-section" id="subsystems">
 
             <div class="section-heading">
-
                 <div>
                     <h2>Hospital Subsystems</h2>
-
-                    <p>
-                        Select an available subsystem to open its application.
-                    </p>
+                    <p>Select an available subsystem to open its application.</p>
                 </div>
-
                 <span class="subsystem-count">
                     <?php echo $totalSubsystems; ?> SYSTEMS
                 </span>
-
             </div>
 
-            
             <?php if (!$apiResult['success']): ?>
-
                 <div class="api-error-message">
                     <strong>Unable to load hospital subsystems.</strong>
-
                     <p><?php echo escapeHTML($apiResult['message']); ?></p>
                 </div>
-
             <?php endif; ?>
 
-
             <?php if (empty($subsystems)): ?>
-
                 <div class="elastic-empty">
                     No hospital subsystems are currently available.
                 </div>
-
             <?php else: ?>
 
                 <!-- Elastic accordion -->
@@ -175,33 +146,14 @@ $fallbackImages = [
 
                         <?php
                             $status = $subsystem['status'] ?? 'Coming Soon';
-
                             $url = trim((string) ($subsystem['url'] ?? ''));
-
-                            $urlScheme = strtolower(
-                                (string) parse_url($url, PHP_URL_SCHEME)
-                            );
-
-                            $isValidUrl =
-                                filter_var($url, FILTER_VALIDATE_URL) !== false
-                                && in_array($urlScheme, ['http', 'https'], true);
-
-                            $isAvailable =
-                                $status === 'Available' && $isValidUrl;
-
+                            $urlScheme = strtolower((string) parse_url($url, PHP_URL_SCHEME));
+                            $isValidUrl = filter_var($url, FILTER_VALIDATE_URL) !== false && in_array($urlScheme, ['http', 'https'], true);
+                            $isAvailable = $status === 'Available' && $isValidUrl;
                             $statusClass = getStatusClass($status);
-
-                            $displayStatus = ($status === 'Available' && !$isValidUrl)
-                                ? 'Coming Soon'
-                                : $status;
-
-                            $image = getSubsystemImage(
-                                $subsystem,
-                                $index,
-                                $fallbackImages
-                            );
-
-                            $isActive = $index === 0;
+                            $displayStatus = ($status === 'Available' && !$isValidUrl) ? 'Coming Soon' : $status;
+                            $image = getSubsystemImage($subsystem, $index, $fallbackImages);
+                            $isActive = ($index === 0 || $index === '0');
                         ?>
 
                         <div
@@ -216,6 +168,7 @@ $fallbackImages = [
                             <!-- Background image -->
                             <div class="elastic-bg">
                                 <img src="<?php echo escapeHTML($image); ?>" alt="">
+                                <div class="elastic-overlay"></div>
                             </div>
 
                             <!-- Vertical label (inactive) -->
@@ -225,17 +178,13 @@ $fallbackImages = [
 
                             <!-- Expanded content -->
                             <div class="elastic-content">
-
                                 <div class="elastic-badges">
-
                                     <span class="elastic-badge">
                                         <?php echo escapeHTML($subsystem['category']); ?>
                                     </span>
-
                                     <span class="status-badge elastic-status <?php echo escapeHTML($statusClass); ?>">
                                         <?php echo escapeHTML($displayStatus); ?>
                                     </span>
-
                                 </div>
 
                                 <h2 class="elastic-heading">
@@ -247,48 +196,25 @@ $fallbackImages = [
                                 </p>
 
                                 <?php if ($isAvailable): ?>
-
-                                    <a
-                                        class="elastic-btn"
-                                        href="<?php echo escapeHTML($url); ?>"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
+                                    <a href="<?php echo escapeHTML($url); ?>" target="_blank" rel="noopener noreferrer" class="elastic-btn">
                                         Open Subsystem →
                                     </a>
-
                                 <?php elseif ($status === 'In Development'): ?>
-
-                                    <span class="elastic-btn disabled">
-                                        Currently in development
-                                    </span>
-
+                                    <span class="elastic-btn disabled">Currently in development</span>
                                 <?php else: ?>
-
-                                    <span class="elastic-btn disabled">
-                                        Not yet available
-                                    </span>
-
+                                    <span class="elastic-btn disabled">Not yet available</span>
                                 <?php endif; ?>
-
                             </div>
-
                         </div>
 
                     <?php endforeach; ?>
 
                 </div>
-
             <?php endif; ?>
-
-
         </section>
-
     </main>
-
 </div>
 
 <script src="assets/js/main.js"></script>
-
 </body>
 </html>
