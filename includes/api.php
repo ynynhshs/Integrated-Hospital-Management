@@ -6,7 +6,26 @@
  */
 function getSubsystemsFromAPI(): array
 {
-    $apiUrl = 'http://127.0.0.1:5000/api/subsystems';
+    $config = require __DIR__ . '/../config/api.php';
+
+    $baseUrl = rtrim(
+        $config['base_url'] ?? '',
+        '/'
+    );
+
+    // Validate the configured API address.
+    if (
+        !filter_var($baseUrl, FILTER_VALIDATE_URL) ||
+        !in_array(parse_url($baseUrl, PHP_URL_SCHEME), ['http', 'https'], true)
+    ) {
+        return [
+            'success' => false,
+            'message' => 'Invalid API address configuration.',
+            'data' => []
+        ];
+    }
+
+    $apiUrl = $baseUrl . '/api/subsystems';
 
     $curl = curl_init($apiUrl);
 
@@ -21,7 +40,7 @@ function getSubsystemsFromAPI(): array
     curl_setopt_array($curl, [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_CONNECTTIMEOUT => 5,
-        CURLOPT_TIMEOUT => 10,
+        CURLOPT_TIMEOUT => 15,
         CURLOPT_HTTPHEADER => [
             'Accept: application/json'
         ]
@@ -33,7 +52,6 @@ function getSubsystemsFromAPI(): array
 
     curl_close($curl);
 
-    // Check for connection errors.
     if ($response === false) {
         return [
             'success' => false,
@@ -42,10 +60,8 @@ function getSubsystemsFromAPI(): array
         ];
     }
 
-    // Decode the API response.
     $result = json_decode($response, true);
 
-    // Check the HTTP response.
     if ($httpCode !== 200) {
         return [
             'success' => false,
@@ -54,7 +70,6 @@ function getSubsystemsFromAPI(): array
         ];
     }
 
-    // Validate the returned data.
     if (
         !is_array($result) ||
         !isset($result['success']) ||

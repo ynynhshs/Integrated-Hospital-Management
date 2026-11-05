@@ -1,4 +1,3 @@
-
 // =========================================
 // MEDILINK MAIN PORTAL
 // Dashboard JavaScript
@@ -23,7 +22,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     });
 
-    if ('IntersectionObserver' in window) {
+    // Highlight navigation links based on the visible section.
+    const sections = document.querySelectorAll('section[id]');
+
+    if ('IntersectionObserver' in window && sections.length) {
 
         const observer = new IntersectionObserver(function (entries) {
 
@@ -51,6 +53,75 @@ document.addEventListener('DOMContentLoaded', function () {
 
         sections.forEach(function (section) {
             observer.observe(section);
+        });
+
+    }
+
+    // =========================================
+    // ELASTIC SUBSYSTEM GRID
+    // Expanding accordion cards
+    // =========================================
+
+    const elasticGrid = document.getElementById('elasticGrid');
+
+    if (elasticGrid) {
+
+        const panels = Array.prototype.slice.call(
+            elasticGrid.querySelectorAll('.elastic-panel')
+        );
+
+        function setActive(index) {
+
+            panels.forEach(function (panel) {
+
+                const isActive = Number(panel.dataset.index) === index;
+
+                panel.classList.toggle('active', isActive);
+
+                panel.setAttribute(
+                    'aria-expanded',
+                    isActive ? 'true' : 'false'
+                );
+
+            });
+
+        }
+
+        panels.forEach(function (panel) {
+
+            const index = Number(panel.dataset.index);
+
+            // Expand on hover (desktop) — mirrors onHoverStart.
+            panel.addEventListener('mouseenter', function () {
+                setActive(index);
+            });
+
+            // Expand on click / tap.
+            panel.addEventListener('click', function (event) {
+
+                // Let links inside the panel navigate normally.
+                if (event.target.closest('a')) {
+                    return;
+                }
+
+                setActive(index);
+
+            });
+
+            // Keyboard accessibility.
+            panel.addEventListener('keydown', function (event) {
+
+                if (
+                    event.key === 'Enter' ||
+                    event.key === ' ' ||
+                    event.key === 'Spacebar'
+                ) {
+                    event.preventDefault();
+                    setActive(index);
+                }
+
+            });
+
         });
 
     }

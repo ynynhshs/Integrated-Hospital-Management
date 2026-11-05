@@ -1,4 +1,3 @@
-
 /* =========================================
    MEDILINK MAIN PORTAL
    Main Dashboard Stylesheet
@@ -812,3 +811,286 @@ a {
     .api-error-message p {
         font-size: 12px;
     }
+
+    
+/* =========================================
+   CLICKABLE SUBSYSTEM CARDS
+========================================= */
+
+.subsystem-card-link {
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.subsystem-card-link:focus-visible {
+    outline: 3px solid var(--primary);
+    outline-offset: 4px;
+}
+
+.subsystem-card-link:hover .subsystem-link {
+    color: var(--primary-dark);
+}
+
+
+/* =========================================
+   ELASTIC SUBSYSTEM GRID
+   (Expanding accordion cards)
+========================================= */
+
+.elastic-section .section-heading {
+    max-width: 1152px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.elastic-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    max-width: 1152px;
+    height: 600px;
+    margin: 0 auto;
+}
+
+.elastic-panel {
+    position: relative;
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 0;
+    border-radius: 2rem;
+    overflow: hidden;
+    cursor: pointer;
+    background: #ffffff;
+    transition:
+        flex 500ms cubic-bezier(0.25, 1, 0.5, 1),
+        background-color 300ms ease;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.elastic-panel:hover {
+    background: #e5e5e5;
+}
+
+.elastic-panel.active {
+    flex: 10 1 0;
+    background: #000000;
+}
+
+.elastic-panel:focus-visible {
+    outline: 3px solid var(--primary);
+    outline-offset: 4px;
+}
+
+/* Background image (fades in when active) */
+.elastic-bg {
+    position: absolute;
+    inset: 0;
+    background: #000000;
+    opacity: 0;
+    transition: opacity 500ms ease;
+    pointer-events: none;
+}
+
+.elastic-panel.active .elastic-bg {
+    opacity: 1;
+}
+
+.elastic-bg img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.6;
+}
+
+/* Vertical label (inactive) */
+.elastic-label {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    transition: opacity 300ms ease;
+    pointer-events: none;
+}
+
+.elastic-panel.active .elastic-label {
+    opacity: 0;
+}
+
+.elastic-label h3 {
+    transform: rotate(-90deg);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #a3a3a3;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+}
+
+/* Expanded content (fades in when active) */
+.elastic-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    height: 100%;
+    padding: 2rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 500ms ease 100ms;
+}
+
+.elastic-panel.active .elastic-content {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.elastic-badges {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.elastic-badge {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.3rem 0.8rem;
+    border-radius: 999px;
+    background: rgba(37, 99, 235, 0.35);
+    color: #bfdbfe;
+    white-space: nowrap;
+}
+
+.elastic-status {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    white-space: nowrap;
+    backdrop-filter: blur(6px);
+}
+
+.elastic-heading {
+    font-size: 2.25rem;
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: #ffffff;
+    margin-bottom: 1rem;
+}
+
+.elastic-sub {
+    font-size: 1.125rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.8);
+    max-width: 32rem;
+}
+
+.elastic-btn {
+    display: inline-block;
+    width: fit-content;
+    margin-top: 2rem;
+    padding: 0.75rem 1.5rem;
+    border: 1px solid #ffffff;
+    border-radius: 999px;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 500;
+    transition:
+        transform 150ms ease,
+        background-color 150ms ease,
+        color 150ms ease;
+}
+
+.elastic-btn:hover {
+    background: #ffffff;
+    color: #000000;
+    transform: scale(1.05);
+}
+
+.elastic-btn:active {
+    transform: scale(0.95);
+}
+
+.elastic-btn.disabled {
+    opacity: 0.75;
+    cursor: default;
+}
+
+.elastic-btn.disabled:hover {
+    background: transparent;
+    color: #ffffff;
+    transform: none;
+}
+
+.elastic-empty {
+    max-width: 1152px;
+    margin: 0 auto;
+    padding: 60px 20px;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 14px;
+    background: var(--white);
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+}
+
+/* Desktop: horizontal accordion */
+@media (min-width: 768px) {
+
+    .elastic-grid {
+        flex-direction: row;
+    }
+
+    .elastic-content {
+        padding: 3rem;
+    }
+
+    .elastic-heading {
+        font-size: 3.75rem;
+    }
+}
+
+/* Small screens */
+@media (max-width: 767px) {
+
+    .elastic-grid {
+        height: 640px;
+    }
+
+    .elastic-content {
+        padding: 1.5rem;
+    }
+
+    .elastic-heading {
+        font-size: 1.75rem;
+    }
+
+    .elastic-sub {
+        font-size: 0.95rem;
+    }
+
+    .elastic-btn {
+        margin-top: 1.25rem;
+        padding: 0.6rem 1.25rem;
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .elastic-label h3 {
+        font-size: 0.9rem;
+    }
+}
